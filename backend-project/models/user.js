@@ -1,6 +1,10 @@
 const pool = require('../db');
 
 const User = {
+    getAll: callback => {
+        const query = 'SELECT * FROM user';
+        pool.query(query, callback);
+    },
     create: (data, callback) => {
         const query = 'INSERT INTO user (username, email, password) VALUES (?, ?, ?)';
         pool.query(query, [data.username, data.email, data.password], callback);

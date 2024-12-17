@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const middleware = require('./middleware');
-const routes = require('./routes/user')
 const userRoutes = require('./routes/user');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -51,8 +50,7 @@ app.use(auth(config));
 
 
 // Routes setup
-app.use('/api', routes);
-app.use('/api/users', userRoutes)
+app.use('/users', userRoutes)
 
 app.get('/', (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');

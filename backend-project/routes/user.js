@@ -42,7 +42,35 @@ const User = require('../models/user');
 
 /**
  * @swagger
- * /api/users/add:
+ * /users:
+ *   get:
+ *     summary: Returns the list of all the users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: The list of the users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: Some server error
+ */
+
+router.get('/', (req, res) => {
+    User.getAll((err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(results);
+    });
+});
+
+/**
+ * @swagger
+ * /users:
  *   post:
  *     summary: Add a new user
  *     tags: [Users]
@@ -62,7 +90,7 @@ const User = require('../models/user');
  *       500:
  *         description: Some server error
  */
-router.post('/add', (req, res) => {
+router.post('/', (req, res) => {
     const userData = req.body;
     User.create(userData, (err, results) => {
         if (err) {
@@ -74,7 +102,7 @@ router.post('/add', (req, res) => {
 
 /**
  * @swagger
- * /api/users/update/{id}:
+ * /users/{id}:
  *   put:
  *     summary: Update an existing user
  *     tags: [Users]
@@ -101,7 +129,7 @@ router.post('/add', (req, res) => {
  *       500:
  *         description: Some server error
  */
-router.put('/update/:id', (req, res) => {
+router.put('/:id', (req, res) => {
     const userId = req.params.id;
     const userData = req.body;
     User.update(userId, userData, (err, results) => {
@@ -114,7 +142,7 @@ router.put('/update/:id', (req, res) => {
 
 /**
  * @swagger
- * /api/users/delete/{id}:
+ * /users/{id}:
  *   delete:
  *     summary: Remove a user
  *     tags: [Users]
@@ -126,12 +154,12 @@ router.put('/update/:id', (req, res) => {
  *         required: true
  *         description: The user id
  *     responses:
- *       200:
+ *       204:
  *         description: The user was deleted
  *       500:
  *         description: Some server error
  */
-router.delete('/delete/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     const userId = req.params.id;
     User.delete(userId, (err, results) => {
         if (err) {
