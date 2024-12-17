@@ -36,6 +36,7 @@ CREATE TABLE `brewery` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `address` varchar(200) NOT NULL
+  `picture_id` int NOT NULL
 );
 
 CREATE TABLE `cart_item` (
@@ -53,3 +54,5 @@ ALTER TABLE `beer_picture` ADD FOREIGN KEY (`beer_id`) REFERENCES `beer` (`id`);
 ALTER TABLE `cart_item` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 ALTER TABLE `cart_item` ADD FOREIGN KEY (`beer_id`) REFERENCES `beer` (`id`);
+
+ALTER TABLE `brewery` ADD FOREIGN KEY (`picture_id`) REFERENCES `picture` (`id`);
