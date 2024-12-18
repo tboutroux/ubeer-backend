@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const pool = require('../db');
 
 const User = {
@@ -6,8 +7,15 @@ const User = {
         pool.query(query, callback);
     },
     create: (data, callback) => {
-        const query = 'INSERT INTO user (username, email, password) VALUES (?, ?, ?)';
-        pool.query(query, [data.username, data.email, data.password], callback);
+
+        // On chiffre le mot de passe en sha256
+        const password = data.password;
+        const hash = crypto.createHash('sha256');
+        hash.update(password);
+        data.password = hash.digest('hex');
+
+        const query = 'INSERT INTO user (username, email, password, role) VALUES (?, ?, ?, ?)';
+        pool.query(query, [data.username, data.email, data.password, data.role], callback);
     },
     update: (id, data, callback) => {
         const query = 'UPDATE user SET username = ?, email = ?, password = ? WHERE id = ?';
