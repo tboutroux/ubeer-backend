@@ -1,3 +1,11 @@
+CREATE USER 'ubeers'@'localhost' IDENTIFIED BY 'ubeers';
+
+CREATE DATABASE ubeers;
+
+GRANT ALL PRIVILEGES ON ubeers.* TO 'ubeers'@'localhost';
+
+USE ubeers;
+
 CREATE TABLE `user` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
