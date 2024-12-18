@@ -13,6 +13,7 @@ const User = require('../models/user');
  *         - username
  *         - email
  *         - password
+ *         - role
  *       properties:
  *         id:
  *           type: integer
@@ -26,11 +27,15 @@ const User = require('../models/user');
  *         password:
  *           type: string
  *           description: The password of the user
+ *         role:
+ *           type: int 
+ *           description: The role of the user
  *       example:
  *         id: 1
  *         username: johndoe
  *         email: johndoe@example.com
  *         password: password123
+ *         role: 0
  */
 
 /**

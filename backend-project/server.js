@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const middleware = require('./middleware');
 const userRoutes = require('./routes/user');
+const breweryRoutes = require('./routes/brewery');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const { auth } = require('express-openid-connect');
@@ -51,6 +52,7 @@ app.use(auth(config));
 
 // Routes setup
 app.use('/users', userRoutes)
+app.use('/breweries', breweryRoutes)
 
 app.get('/', (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
