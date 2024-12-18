@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const middleware = require('./middleware');
 const userRoutes = require('./routes/user');
+const beerRoutes = require('./routes/beer');
 const breweryRoutes = require('./routes/brewery');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -52,6 +53,7 @@ app.use(auth(config));
 
 // Routes setup
 app.use('/users', userRoutes)
+app.use('/beers', beerRoutes)
 app.use('/breweries', breweryRoutes)
 
 app.get('/', (req, res) => {
