@@ -9,16 +9,6 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const { auth } = require('express-openid-connect');
 
-
-const config = {
-    authRequired: false,
-    auth0Logout: true,
-    secret: 'a long, randomly-generated string stored in env',
-    baseURL: 'http://localhost:3099',
-    clientID: 'Re5b1kLFfjIrBjsBKL3RIxAE7l25Rsjn',
-    issuerBaseURL: 'https://dev-dqgt7vf684gctqa2.us.auth0.com'
-};
-
 const app = express();
 const PORT = process.env.PORT || 3099;
 
@@ -48,7 +38,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Middleware setup
 app.use(bodyParser.json());
 app.use(middleware);
-app.use(auth(config));
 
 
 // Routes setup
