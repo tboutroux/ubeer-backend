@@ -7,3 +7,52 @@
 * {
     font-family: 'Poppins', sans-serif;
 }
+
+$main-color : #00263e; 
+$second-color : #cb333b; 
+
+.cla-button {
+    background-color: #00263e;
+    box-shadow: 0 2px 32px 0 rgba(0, 0, 0, .08), 0 1px 6px 0 rgba(0, 0, 0, .09);
+    transition: background-color .15s linear;
+    border-image-source: url(https://fr.86beer.com/etc.clientlibs/eightsixbeer/clientlibs/eightsixbeer.app/resources/img/Button-borders-dividers/Button_Border_BLUE.svg);
+    border-image-width: .55em 1.3em;
+    border-image-repeat: initial;
+    border-image-outset: .6rem 2px;
+    border-image-slice: 10%;
+    margin-top: 1.7rem;
+    align-items: center;
+    border-radius: .2rem;
+    color: #fff;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    font-size: 1.8rem;
+    justify-content: center;
+    min-width: 17.2rem;
+    outline: 0;
+    padding: 1.5rem 1.6rem 1.3rem;
+    text-align: center;
+    transition: all .3s ease;
+}
+
+.button-small {
+    @extend .cla-button;
+    font-size: 1.2rem;
+    min-width: 12rem;
+    padding: 1rem 1.2rem 1rem;
+    border-image-width: .70em 1.3em;
+}
+
+.button-extra-small {
+    @extend .cla-button;
+    font-size: 1rem;
+    min-width: 8rem;
+    padding: 0.8rem 1rem 0.8rem;
+    border-image-width: .90em 1.3em;
+}
+
+.button-extra-small:hover {
+    border-image-source: url(https://fr.86beer.com/etc.clientlibs/eightsixbeer/clientlibs/eightsixbeer.app/resources/img/Button-borders-dividers/Button_Border_RED.svg);
+    background-color: #c40c2f;
+
+}
