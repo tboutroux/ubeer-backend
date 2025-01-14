@@ -26,7 +26,6 @@ const io = socketIo(server, {
     }
 });
 
-// Swagger setup
 const swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
@@ -39,6 +38,10 @@ const swaggerOptions = {
             {
                 url: `http://localhost:${PORT}`,
                 description: 'Local server'
+            },
+            {
+                url: 'https://ubeer-backend.onrender.com',
+                description: 'Production server'
             }
         ]
     },
@@ -52,10 +55,20 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(bodyParser.json());
 const allowedOrigins = ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app', 'https://ubeer-backend.onrender.com'];
 
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true
-}));
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS blocked for origin: ${origin}`));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+};
+app.use(cors(corsOptions));
+
 
 app.use((err, req, res, next) => {
     if (err) {
@@ -73,9 +86,9 @@ app.use('/beers', beerRoutes);
 app.use('/breweries', breweryRoutes);
 app.use('/pictures', picturesRoutes);
 
-app.get('/', (req, res) => {
-    res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
-});
+// app.get('/', (req, res) => {
+//     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+// });
 
 // Configuration Socket.IO
 io.on('connection', (socket) => {
