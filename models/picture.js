@@ -8,7 +8,33 @@ const os = require('os');
 const Picture = {
     getAll: callback => {
         const query = 'SELECT * FROM picture';
-        pool.query(query, callback);
+        pool.query(query, (err, results) => {
+            if (err) {
+            return callback(err);
+            }
+            const pictures = results.map(picture => {
+            const fileId = picture.data.split('/d/')[1].split('/')[0];
+            picture.url = `https://drive.google.com/uc?id=${fileId}`;
+            return picture;
+            });
+            callback(null, pictures);
+        });
+    },
+    getOne: (id, callback) => {
+        const query = 'SELECT * FROM picture WHERE id = ?';
+        pool.query(query, [id], (err, results) => {
+            if (err) {
+                return callback(err);
+            }
+            if (results.length > 0) {
+                const picture = results[0];
+                const fileId = picture.data.split('/d/')[1].split('/')[0];
+                picture.url = `https://drive.google.com/uc?id=${fileId}`;
+                callback(null, picture);
+            } else {
+                callback(null, null);
+            }
+        });
     },
     create: async (data, callback) => {
         const { file } = data;

@@ -5,6 +5,7 @@ const middleware = require('./middleware');
 const userRoutes = require('./routes/user');
 const beerRoutes = require('./routes/beer');
 const breweryRoutes = require('./routes/brewery');
+const picturesRoutes = require('./routes/picture');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const http = require('http');
@@ -70,6 +71,7 @@ app.use(middleware);
 app.use('/users', userRoutes);
 app.use('/beers', beerRoutes);
 app.use('/breweries', breweryRoutes);
+app.use('/pictures', picturesRoutes);
 
 app.get('/', (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
@@ -82,7 +84,26 @@ io.on('connection', (socket) => {
     socket.on('getBreweries', async () => {
         try {
             let breweries = await fetch(`http://localhost:${PORT}/breweries`).then(response => response.json());
+            
+            // On recherche les images de profil et de bannière pour chaque brasserie
+            for (let brewery of breweries) {
+                const profilePicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.profile_picture_id}`)
+                .then(response => {
+                    return response.json();
+                })
+                .catch(error => console.error('Erreur lors de la récupération de l\'image de profil :', error));
+
+                const bannerPicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.banner_picture_id}`)
+                .then(response => {
+                    return response.json();
+                })
+                .catch(error => console.error('Erreur lors de la récupération de l\'image de bannière :', error));
+
+                brewery.profile_picture_url = profilePicture.data;
+                brewery.banner_picture_url = bannerPicture.data;
+            }
             console.log(breweries);
+            
             socket.emit('breweries', breweries); // Envoie des données au client
         } catch (error) {
             console.error('Erreur lors de la récupération des brasseries :', error);
