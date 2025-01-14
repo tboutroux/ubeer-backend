@@ -1,5 +1,5 @@
 const pool = require('../db');
-const pictureModel = require('../models/picture');
+const pictureModel = require('./picture');
 
 const Brewery = {
     getAll: callback => {
