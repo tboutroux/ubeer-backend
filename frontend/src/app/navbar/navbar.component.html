@@ -7,6 +7,9 @@
       <a [routerLink]="['/beers']" class="text-[$main-color] hover:text-[#cb333b] transition duration-200">
         Beers
       </a>
+      <a [routerLink]="['/breweries']" class="text-[$main-color] hover:text-[#cb333b] transition duration-200">
+        Breweries
+      </a>
     </div>
     <div>
       <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
@@ -22,3 +25,5 @@
     </div>
   </div>
 </nav>
+
+<div class="px-6 py-6">a</div>

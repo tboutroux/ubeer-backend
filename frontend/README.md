@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/user/018d87f9-d14a-41df-9a8a-08f8cff01174/project/6fbf530b-1bfc-47f7-ae38-5d984c4b2ce2.svg)](https://wakatime.com/badge/user/018d87f9-d14a-41df-9a8a-08f8cff01174/project/6fbf530b-1bfc-47f7-ae38-5d984c4b2ce2)
+
 # Ubeers
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.9.
