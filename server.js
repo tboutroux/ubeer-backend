@@ -18,7 +18,7 @@ const PORT = process.env.SERV_PORT || 3099;
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app', 'https://ubeer-backend.onrender.com/*'],
+        origin: ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app', 'https://ubeer-backend.onrender.com'],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type'],
         credentials: true
@@ -49,7 +49,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Middleware setup
 app.use(bodyParser.json());
-const allowedOrigins = ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app', 'https://ubeer-backend.onrender.com/*'];
+const allowedOrigins = ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app', 'https://ubeer-backend.onrender.com'];
 
 app.use(cors({
     origin: allowedOrigins,
