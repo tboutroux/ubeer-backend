@@ -106,6 +106,14 @@ router.post(
         { name: 'banner_picture_id', maxCount: 1 }
     ]),
     (req, res) => {
+        console.log(req.files);
+        console.log(req.body);
+
+        // Vérifiez que les fichiers nécessaires sont présents
+        if (!req.files || !req.files['profile_picture_id'] || !req.files['banner_picture_id']) {
+            return res.status(400).json({ error: 'Missing required files' });
+        }
+
         const datas = {
             name: req.body.name,
             address: req.body.address,
@@ -123,6 +131,7 @@ router.post(
         });
     }
 );
+
 /**
  * @swagger
  * /breweries/{id}:

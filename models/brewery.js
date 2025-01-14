@@ -46,7 +46,7 @@ const Brewery = {
                 });
             });
 
-            console.log(breweriesWithImages)
+            // console.log(breweriesWithImages)
         });
     },
     create: (data, callback) => {
