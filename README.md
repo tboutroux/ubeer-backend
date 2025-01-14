@@ -1,5 +1,3 @@
-# backend-project/backend-project/README.md
-
 # Backend Project
 
 ## Overview
