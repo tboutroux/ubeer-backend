@@ -115,11 +115,40 @@ io.on('connection', (socket) => {
                 brewery.profile_picture_url = profilePicture.data;
                 brewery.banner_picture_url = bannerPicture.data;
             }
-            console.log(breweries);
             
             socket.emit('breweries', breweries); // Envoie des données au client
         } catch (error) {
             console.error('Erreur lors de la récupération des brasseries :', error);
+        }
+    });
+
+    // Récupérer les détails d'une brasserie par ID
+    socket.on('getBreweryById', async (id) => {
+        try {
+            const response = await fetch(`http://localhost:${PORT}/breweries/${id}`);
+
+            // Vérifier si la réponse a un statut OK (200)
+            if (!response.ok) {
+                throw new Error(`Erreur de récupération des détails : ${response.statusText}`);
+            }
+    
+            const brewery = await response.json();
+    
+            if (!brewery) {
+                throw new Error('La brasserie est introuvable ou la réponse est vide');
+            }
+    
+            // Recherche des images de profil et de bannière
+            const profilePicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.profile_picture_id}`).then(res => res.json());
+            const bannerPicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.banner_picture_id}`).then(res => res.json());
+    
+            brewery.profile_picture_url = profilePicture.data;
+            brewery.banner_picture_url = bannerPicture.data;
+    
+            socket.emit('breweryDetails', brewery); // Envoie des détails de la brasserie
+        } catch (error) {
+            console.error('Erreur lors de la récupération des détails de la brasserie:', error);
+            socket.emit('error', { message: error.message });
         }
     });
 

@@ -49,6 +49,20 @@ const Brewery = {
             // console.log(breweriesWithImages)
         });
     },
+    getOne: (id, callback) => {
+        // Requête pour récupérer une brasserie par ID
+        const query = 'SELECT * FROM brewery WHERE id = ?';
+        pool.query(query, [id], (err, results) => {
+            if (err) {
+                return callback(err, null);
+            }
+            if (results.length === 0) {
+                return callback(null, null);
+            }
+            callback(null, results[0]);
+            }
+        );
+    },
     create: (data, callback) => {
 
         // On ajoute les images dans la table picture

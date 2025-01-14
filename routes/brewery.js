@@ -75,6 +75,44 @@ router.get('/', (req, res) => {
         res.status(200).json(results);
     });
 });
+/**
+ * @swagger
+ * /breweries/{id}:
+ *   get:
+ *     summary: Get the brewery by id
+ *     tags:
+ *       - Breweries
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Numeric ID of the brewery to get
+ *         schema:
+ *           type: integer
+ *           format: int64
+ *     responses:
+ *       200:
+ *         description: The brewery description by id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Brewery'
+ *       404:
+ *         description: Brewery not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/:id', (req, res) => {
+    Brewery.getOne(req.params.id, (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Brewery not found' });
+        }
+        res.status(200).json(results);
+    });
+});
 
 /**
  * @swagger

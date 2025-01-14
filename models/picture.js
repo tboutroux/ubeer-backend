@@ -14,7 +14,7 @@ const Picture = {
             }
             const pictures = results.map(picture => {
             const fileId = picture.data.split('/d/')[1].split('/')[0];
-            picture.url = `https://drive.google.com/uc?id=${fileId}`;
+            picture.url = `https://drive.google.com/thumbnail?id=${fileId}`;
             return picture;
             });
             callback(null, pictures);
@@ -29,11 +29,14 @@ const Picture = {
             if (results.length > 0) {
                 const picture = results[0];
                 const fileId = picture.data.split('/d/')[1].split('/')[0];
-                picture.url = `https://drive.google.com/uc?id=${fileId}`;
-                callback(null, picture);
+                picture.url = `https://drive.google.com/thumbnail?id=${fileId}`;
+
+                console.log(picture.url);
+                callback(null, { data: picture.url }); // Inclure une réponse cohérente
             } else {
-                callback(null, null);
+                callback(null, { data: null }); // Répondre avec un objet vide si aucune donnée n'est trouvée
             }
+            
         });
     },
     create: async (data, callback) => {
