@@ -1,0 +1,29 @@
+<nav id="navbar" class="fixed top-0 left-0 z-40 w-full bg-white shadow-md">
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex space-x-4">
+      <a [routerLink]="['/']" class="text-[$main-color] hover:text-[#cb333b] transition duration-200">
+        Home
+      </a>
+      <a [routerLink]="['/beers']" class="text-[$main-color] hover:text-[#cb333b] transition duration-200">
+        Beers
+      </a>
+      <a [routerLink]="['/breweries']" class="text-[$main-color] hover:text-[#cb333b] transition duration-200">
+        Breweries
+      </a>
+    </div>
+    <div>
+      <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+        <button (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })" class="p-2 bg-red-800 hover:bg-red-700 text-slate-200 rounded-lg hover:text-white transition duration-200">
+          <span class="flex-1 ms-3 me-3 whitespace-nowrap">Logout</span>
+        </button>
+      </ng-container>
+      <ng-template #loggedOut>
+        <button (click)="auth.loginWithRedirect()" class="p-2 bg-green-800 hover:bg-green-700 text-slate-200 rounded-lg hover:text-white transition duration-200">
+          <span class="flex-1 ms-3 me-3 whitespace-nowrap">Login</span>
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</nav>
+
+<div class="px-6 py-6">a</div>
