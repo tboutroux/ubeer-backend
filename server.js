@@ -13,13 +13,13 @@ const socketIo = require('socket.io');
 const { auth } = require('express-openid-connect');
 
 const app = express();
-const PORT = process.env.PORT || 3100;
+const PORT = process.env.SERV_PORT || 3099;
 
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
+        origin: ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app', 'https://ubeer-backend.onrender.com/*'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type'],
         credentials: true
     }
@@ -47,30 +47,29 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-
 // Middleware setup
 app.use(bodyParser.json());
+const allowedOrigins = ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app', 'https://ubeer-backend.onrender.com/*'];
 
-const allowedOrigins = ['http://localhost:4200', 'https://angular-terry-barillon.vercel.app'];
 app.use(cors({
-    origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-    },
+    origin: allowedOrigins,
     credentials: true
 }));
 
+app.use((err, req, res, next) => {
+    if (err) {
+        console.error('CORS error:', err.message);
+        return res.status(500).json({ message: 'CORS error: ' + err.message });
+    }
+    next();
+});
+
 app.use(middleware);
 
-
 // Routes setup
-app.use('/users', userRoutes)
-app.use('/beers', beerRoutes)
-app.use('/breweries', breweryRoutes)
+app.use('/users', userRoutes);
+app.use('/beers', beerRoutes);
+app.use('/breweries', breweryRoutes);
 
 app.get('/', (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
@@ -80,14 +79,14 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log('Un utilisateur est connecté.');
 
-    // Réponse à l'événement "getBreweries"
     socket.on('getBreweries', async () => {
-            
-        let breweries = await fetch(`http://localhost:${PORT}/breweries`).then(response => response.json());
-
-        console.log(breweries)
-
-        socket.emit('breweries', breweries); // Envoie des données au client
+        try {
+            let breweries = await fetch(`http://localhost:${PORT}/breweries`).then(response => response.json());
+            console.log(breweries);
+            socket.emit('breweries', breweries); // Envoie des données au client
+        } catch (error) {
+            console.error('Erreur lors de la récupération des brasseries :', error);
+        }
     });
 
     socket.on('disconnect', () => {
