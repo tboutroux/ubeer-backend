@@ -1,62 +1,31 @@
-name: CI/CD Pipeline
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
 
 on:
   push:
-    branches:
-      - main  # Surveillez la branche principale
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
-  ci:
-    name: Build and Test
+  build:
+
     runs-on: ubuntu-latest
 
-    steps:
-      # 1. Checkout le code source
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # 2. Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18  # Adaptez selon vos besoins
-
-      # 3. Installer les dépendances et tester le backend
-      - name: Install & Test Backend
-        working-directory: ./backend
-        run: |
-          npm install
-
-      # 4. Installer les dépendances et tester le frontend
-      - name: Install & Test Frontend
-        working-directory: ./frontend
-        run: |
-          npm install
-
-      # 5. Build le frontend
-      - name: Build Frontend
-        working-directory: ./frontend
-        run: npm run build
-
-  cd:
-    name: Deploy
-    needs: ci
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      # Déploiement : Adaptez cette étape en fonction de votre cible
-      - name: Deploy to Server
-        run: |
-          echo "Déploiement sur le serveur en cours..."
-          # Ajoutez votre script de déploiement ici (SSH, FTP, Docker, etc.)
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
