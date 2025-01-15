@@ -1,6 +1,6 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql2');
 const middleware = require('./middleware');
 const userRoutes = require('./routes/user');
 const beerRoutes = require('./routes/beer');
@@ -15,6 +15,16 @@ const { auth } = require('express-openid-connect');
 
 const app = express();
 const PORT = process.env.SERV_PORT || 3099;
+
+// Récupération de l'environnement
+const environnement = process.env.ENVIRONMENT
+let SERVER = '';
+
+if (environnement === 'development') {
+    SERVER = 'localhost';
+} else {
+    SERVER = 'ubeer-backend.onrender.com';
+}
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -96,17 +106,17 @@ io.on('connection', (socket) => {
 
     socket.on('getBreweries', async () => {
         try {
-            let breweries = await fetch(`http://localhost:${PORT}/breweries`).then(response => response.json());
+            let breweries = await fetch(`http://${SERVER}:${PORT}/breweries`).then(response => response.json());
             
             // On recherche les images de profil et de bannière pour chaque brasserie
             for (let brewery of breweries) {
-                const profilePicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.profile_picture_id}`)
+                const profilePicture = await fetch(`http://${SERVER}:${PORT}/pictures/${brewery.profile_picture_id}`)
                 .then(response => {
                     return response.json();
                 })
                 .catch(error => console.error('Erreur lors de la récupération de l\'image de profil :', error));
 
-                const bannerPicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.banner_picture_id}`)
+                const bannerPicture = await fetch(`http://${SERVER}:${PORT}/pictures/${brewery.banner_picture_id}`)
                 .then(response => {
                     return response.json();
                 })
@@ -125,7 +135,7 @@ io.on('connection', (socket) => {
     // Récupérer les détails d'une brasserie par ID
     socket.on('getBreweryById', async (id) => {
         try {
-            const response = await fetch(`http://localhost:${PORT}/breweries/${id}`);
+            const response = await fetch(`http://${SERVER}:${PORT}/breweries/${id}`);
 
             // Vérifier si la réponse a un statut OK (200)
             if (!response.ok) {
@@ -139,8 +149,8 @@ io.on('connection', (socket) => {
             }
     
             // Recherche des images de profil et de bannière
-            const profilePicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.profile_picture_id}`).then(res => res.json());
-            const bannerPicture = await fetch(`http://localhost:${PORT}/pictures/${brewery.banner_picture_id}`).then(res => res.json());
+            const profilePicture = await fetch(`http://${SERVER}:${PORT}/pictures/${brewery.profile_picture_id}`).then(res => res.json());
+            const bannerPicture = await fetch(`http://${SERVER}:${PORT}/pictures/${brewery.banner_picture_id}`).then(res => res.json());
     
             brewery.profile_picture_url = profilePicture.data;
             brewery.banner_picture_url = bannerPicture.data;
@@ -152,6 +162,26 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Suppression d'une brasserie
+    socket.on('deleteBrewery', async (id) => {
+        try {
+            console.log('Suppression de la brasserie avec l\'ID:', id);
+            const response = await fetch(`http://${SERVER}:${PORT}/breweries/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur lors de la suppression : ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            socket.emit('breweryDeleted', { id: result.id }); // Émettre un événement pour signaler que la brasserie a été supprimée
+        } catch (error) {
+            console.error('Erreur lors de la suppression de la brasserie:', error);
+            socket.emit('error', { message: error.message });
+        }
+    });
+
     socket.on('disconnect', () => {
         console.log('Un utilisateur s\'est déconnecté.');
     });
@@ -159,5 +189,5 @@ io.on('connection', (socket) => {
 
 // Démarrer le serveur HTTP et Socket.IO
 server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://${SERVER}:${PORT}`);
 });

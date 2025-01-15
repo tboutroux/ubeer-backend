@@ -70,6 +70,7 @@ upload = multer({ storage: storage });
 router.get('/', (req, res) => {
     Brewery.getAll((err, results) => {
         if (err) {
+            console.error('Error getting breweries:', err);
             return res.status(500).json({ error: err.message });
         }
         res.status(200).json(results);
@@ -144,8 +145,6 @@ router.post(
         { name: 'banner_picture_id', maxCount: 1 }
     ]),
     (req, res) => {
-        console.log(req.files);
-        console.log(req.body);
 
         // Vérifiez que les fichiers nécessaires sont présents
         if (!req.files || !req.files['profile_picture_id'] || !req.files['banner_picture_id']) {
