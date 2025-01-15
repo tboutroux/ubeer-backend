@@ -10,12 +10,34 @@ const Picture = {
         const query = 'SELECT * FROM picture';
         pool.query(query, (err, results) => {
             if (err) {
-            return callback(err);
+                console.error('Error getting pictures:', err);
+                return callback(err);
             }
             const pictures = results.map(picture => {
-            const fileId = picture.data.split('/d/')[1].split('/')[0];
-            picture.url = `https://drive.google.com/thumbnail?id=${fileId}`;
-            return picture;
+                try {
+                    const baseUrl = 'https://drive.google.com/thumbnail?id=';
+                
+                    // Vérifie si l'URL correspond au format "/d/<fileId>/"
+                    if (picture.data.includes('/d/')) {
+                        const fileId = picture.data.split('/d/')[1].split('/')[0];
+                        picture.url = `${baseUrl}${fileId}`;
+                    }
+                    // Vérifie si l'URL correspond au format "https://drive.google.com/uc?id=<fileId>"
+                    else if (picture.data.includes('uc?id=')) {
+                        const fileId = picture.data.split('uc?id=')[1].split('&')[0]; // Pour éviter les paramètres supplémentaires
+                        picture.url = `${baseUrl}${fileId}`;
+                    }
+                    // Gère les autres formats inattendus
+                    else {
+                        console.warn('Unrecognized Google Drive URL format:', picture.data);
+                        picture.url = picture.data; // Utilise l'URL d'origine comme fallback
+                    }
+                } catch (error) {
+                    console.error('Error getting picture URL:', error);
+                    picture.url = null; // Met l'URL à null si une erreur survient
+                }
+                
+                return picture;
             });
             callback(null, pictures);
         });
@@ -28,8 +50,28 @@ const Picture = {
             }
             if (results.length > 0) {
                 const picture = results[0];
-                const fileId = picture.data.split('/d/')[1].split('/')[0];
-                picture.url = `https://drive.google.com/thumbnail?id=${fileId}`;
+                try {
+                    const baseUrl = 'https://drive.google.com/thumbnail?id=';
+                
+                    // Vérifie si l'URL correspond au format "/d/<fileId>/"
+                    if (picture.data.includes('/d/')) {
+                        const fileId = picture.data.split('/d/')[1].split('/')[0];
+                        picture.url = `${baseUrl}${fileId}`;
+                    }
+                    // Vérifie si l'URL correspond au format "https://drive.google.com/uc?id=<fileId>"
+                    else if (picture.data.includes('uc?id=')) {
+                        const fileId = picture.data.split('uc?id=')[1].split('&')[0]; // Pour éviter les paramètres supplémentaires
+                        picture.url = `${baseUrl}${fileId}`;
+                    }
+                    // Gère les autres formats inattendus
+                    else {
+                        console.warn('Unrecognized Google Drive URL format:', picture.data);
+                        picture.url = picture.data; // Utilise l'URL d'origine comme fallback
+                    }
+                } catch (error) {
+                    console.error('Error getting picture URL:', error);
+                    picture.url = null; // Met l'URL à null si une erreur survient
+                }
 
                 console.log(picture.url);
                 callback(null, { data: picture.url }); // Inclure une réponse cohérente
@@ -49,16 +91,16 @@ const Picture = {
         });
     
         const drive = google.drive({ version: 'v3', auth });
-    
+
         // Créer un fichier temporaire
         const tempFilePath = path.join(os.tmpdir(), file.originalname);
+
         fs.writeFileSync(tempFilePath, file.buffer);
-    
+
         const fileMetadata = {
             name: file.originalname,
             parents: [process.env.GOOGLE_DRIVE_FOLDER_ID] // Doit être un tableau
         };
-    
         const media = {
             mimeType: file.mimetype,
             body: fs.createReadStream(tempFilePath)
@@ -70,6 +112,8 @@ const Picture = {
                 media: media,
                 fields: 'id'
             });
+
+            console.log('File uploaded:', response.data.id);
     
             const fileId = response.data.id;
             const fileUrl = `https://drive.google.com/uc?id=${fileId}`;
@@ -88,7 +132,7 @@ const Picture = {
         } catch (error) {
             // Supprimer le fichier temporaire même en cas d'erreur
             fs.unlinkSync(tempFilePath);
-            callback(error);
+            console.error('Error uploading file:', error);
         }
     },
     update: (id, data, callback) => {
