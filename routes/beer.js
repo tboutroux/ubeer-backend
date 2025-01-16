@@ -95,8 +95,11 @@ router.get('/', (req, res) => {
  */
 router.post('/', (req, res) => {
   const beerData = req.body;
+  console.log('Received beer data:', beerData); // Ajout de logs pour vérifier les données reçues
+
   Beer.create(beerData, (err, results) => {
     if (err) {
+      console.error('Error creating beer:', err); // Ajout de logs pour afficher l'erreur
       return res.status(500).json({ error: err.message });
     }
     res.status(201).json({ message: 'Beer added successfully', beerId: results.insertId });
