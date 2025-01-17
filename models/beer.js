@@ -16,7 +16,20 @@ const Beer = {
   delete: (id, callback) => {
     const query = 'DELETE FROM beer WHERE id = ?';
     pool.query(query, [id], callback);
-  }
+  },
+  getFiltered: (query, params, callback) => {
+    pool.query(query, params, callback);
+  },
+  count: callback => {
+    const query = 'SELECT COUNT(*) AS total FROM beer';
+    pool.query(query, (err, results) => {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, results[0].total);
+    });
+  },
+    
 };
 
 module.exports = Beer;
