@@ -47,29 +47,114 @@ const Beer = require('../models/beer');
 /**
  * @swagger
  * /beers:
- *   get:
- *     summary: Returns the list of all the beers
- *     tags: [Beers]
- *     responses:
- *       200:
- *         description: The list of the beers
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Beer'
- *       500:
- *         description: Some server error
+ *  get:
+ *    summary: Returns the list of all the beers with pagination and filtering
+ *    tags: [Beers]
+ *    parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *        description: The page number (default is 1)
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: integer
+ *        description: The number of items per page (default is 10)
+ *      - in: query
+ *        name: name
+ *        schema:
+ *          type: string
+ *        description: Filter beers by name
+ *      - in: query
+ *        name: price
+ *        schema:
+ *          type: number
+ *        description: Filter beers by price (less than or equal to)
+ *      - in: query
+ *        name: brewery_id
+ *        schema:
+ *          type: integer
+ *        description: Filter beers by brewery ID
+ *    responses:
+ *      200:
+ *        description: The list of beers with pagination and filtering
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                data:
+ *                  type: array
+ *                  items:
+ *                    $ref: '#/components/schemas/Beer'
+ *                pagination:
+ *                  type: object
+ *                  properties:
+ *                    current_page:
+ *                      type: integer
+ *                    total_pages:
+ *                      type: integer
+ *                    total_items:
+ *                      type: integer
+ *                    limit:
+ *                      type: integer
+ *      500:
+ *        description: Some server error
+ *
  */
 router.get('/', (req, res) => {
-  Beer.getAll((err, results) => {
+
+  const { page = 1, limit = 10, name, price, brewery_id } = req.query;
+
+  const offset = (page - 1) * limit;
+
+  let query = 'SELECT * FROM beer WHERE 1=1'; // 1=1 est un raccourci pour éviter des erreurs dans les conditions
+  const queryParams = [];
+
+  if (name) {
+    query += ' AND name LIKE ?';
+    queryParams.push(`%${name}%`);
+  }
+
+  if (price) {
+    query += ' AND price <= ?';
+    queryParams.push(price);
+  }
+
+  if (brewery_id) {
+    query += ' AND brewery_id = ?';
+    queryParams.push(brewery_id);
+  }
+
+  query += ' LIMIT ? OFFSET ?';
+  queryParams.push(parseInt(limit), parseInt(offset));
+
+  // Exécution de la requête SQL
+  Beer.getFiltered(query, queryParams, (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(200).json(results);
+
+    // Récupérer le nombre total d'enregistrements pour la pagination
+    Beer.count((err, totalCount) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      res.status(200).json({
+        data: results,
+        pagination: {
+          current_page: parseInt(page),
+          total_pages: Math.ceil(totalCount / limit),
+          total_items: totalCount,
+          limit: parseInt(limit),
+        },
+      });
+    });
   });
 });
+
 
 /**
  * @swagger
