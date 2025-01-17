@@ -239,7 +239,7 @@ router.delete('/:id', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.status(200).json({ id: req.params.id });
+        res.status(204);
     });
 });
 

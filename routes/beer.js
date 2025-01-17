@@ -256,7 +256,7 @@ router.delete('/:id', (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(200).json({ message: 'Beer deleted successfully' });
+    res.status(204);
   });
 });
 
