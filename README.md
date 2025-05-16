@@ -40,5 +40,8 @@ node server.js
 
 The server will be running on `http://localhost:3000` (or the specified port in your configuration).
 
-## Contributing
-Feel free to submit issues or pull requests for improvements or bug fixes.
+## Seance 16/05
+Nous avons utilisé deepface, un repo open source dispo en module python qui permet de faire de la reconnaissance faciale et de la vérification des ages, il manque à lié cela au front pour faire de la reconnaissance.
+Nous sommes en train de migrer la BDD vers une base MongoDB 
+URL front : https://ubeers.netlify.app/
+URL back : https://ubeer-backend.onrender.com/
