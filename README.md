@@ -45,3 +45,10 @@ Nous avons utilisé deepface, un repo open source dispo en module python qui per
 Nous sommes en train de migrer la BDD vers une base MongoDB 
 URL front : https://ubeers.netlify.app/
 URL back : https://ubeer-backend.onrender.com/
+
+## Seance 03/06
+Nous avons utilisé l'API FaceAnalyser de RapidAPI qui permet de retourner l'âge d'une personne en passant en paramètre une photo. Nous enregistrons les photos sur Cloudinary. Nous avons également implémenté une pop-up pour la vérification d'âge sur le front 
+Lien vers le front : https://github.com/Many0nne/ubeer-frontend
+Pour la prochaine fois : 
+Ajouter une sécurité pour l'accès aux images
+Ajouter un Redis pour le stockage des informations utilisateurs
