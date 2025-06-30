@@ -6,6 +6,7 @@ const userRoutes = require('./routes/user');
 const beerRoutes = require('./routes/beer');
 const breweryRoutes = require('./routes/brewery');
 const picturesRoutes = require('./routes/picture');
+const ageVerificationRoutes = require('./routes/ageVerification');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const http = require('http');
@@ -29,7 +30,7 @@ if (environnement === 'development') {
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: ['https://ubeers.netlify.app', 'https://ubeer-backend.onrender.com', 'http://localhost:4200'],
+        origin: '*',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type'],
         credentials: true
@@ -66,13 +67,7 @@ app.use(bodyParser.json());
 const allowedOrigins = ['https://ubeers.netlify.app', 'http://localhost:4200', 'https://ubeer-backend.onrender.com'];
 
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error(`CORS blocked for origin: ${origin}`));
-        }
-    },
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -95,6 +90,7 @@ app.use('/users', userRoutes);
 app.use('/beers', beerRoutes);
 app.use('/breweries', breweryRoutes);
 app.use('/pictures', picturesRoutes);
+app.use('/verify-age', ageVerificationRoutes);
 
 // app.get('/', (req, res) => {
 //     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
