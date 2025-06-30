@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "node --watch server.js"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,8 @@
     "googleapis": "^144.0.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.5",
+    "redis": "^5.5.6",
+    "redis-cli": "^2.1.2",
     "socket.io": "^4.8.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"

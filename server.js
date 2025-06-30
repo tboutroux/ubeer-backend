@@ -11,6 +11,7 @@ const swaggerUi = require('swagger-ui-express');
 const http = require('http');
 const cors = require('cors');
 const socketIo = require('socket.io');
+const { connectRedis } = require('./redis');
 const { auth } = require('express-openid-connect');
 const ageVerificationAttemptRoutes = require('./routes/ageVerificationAttempt');
 
@@ -26,6 +27,9 @@ if (environnement === 'development') {
 } else {
     SERVER = 'ubeer-backend.onrender.com';
 }
+
+// Connexion à Redis
+connectRedis();
 
 const server = http.createServer(app);
 const io = socketIo(server, {

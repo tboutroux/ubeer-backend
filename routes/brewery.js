@@ -3,6 +3,7 @@ const router = express.Router();
 const Brewery = require('../models/brewery');
 const multer = require('multer');
 
+const { client } = require('../redis');
 const storage = multer.memoryStorage();
 upload = multer({ storage: storage });
 
@@ -103,16 +104,27 @@ router.get('/', (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get('/:id', (req, res) => {
-    Brewery.getOne(req.params.id, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'Brewery not found' });
-        }
-        res.status(200).json(results);
-    });
+router.get('/:id', async (req, res) => {
+    const breweryId = req.params.id;
+
+    try {
+        // Incrémenter le compteur de vues dans Redis
+        const views = await client.incr(`brewery:${breweryId}:views`);
+
+        // Récupérer les détails de la brasserie
+        Brewery.getOne(breweryId, (err, results) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'Brewery not found' });
+            }
+            res.status(200).json({ ...results, views: parseInt(views || 0) });
+        });
+    } catch (error) {
+        console.error('Erreur Redis :', error);
+        res.status(500).json({ error: 'Erreur lors de l\'incrémentation des vues' });
+    }
 });
 
 /**
