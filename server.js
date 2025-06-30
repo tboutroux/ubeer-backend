@@ -12,6 +12,7 @@ const http = require('http');
 const cors = require('cors');
 const socketIo = require('socket.io');
 const { auth } = require('express-openid-connect');
+const ageVerificationAttemptRoutes = require('./routes/ageVerificationAttempt');
 
 const app = express();
 const PORT = process.env.SERV_PORT || 3099;
@@ -95,6 +96,7 @@ app.use('/users', userRoutes);
 app.use('/beers', beerRoutes);
 app.use('/breweries', breweryRoutes);
 app.use('/pictures', picturesRoutes);
+app.use('/age-verification-attempts', ageVerificationAttemptRoutes);
 
 // app.get('/', (req, res) => {
 //     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
